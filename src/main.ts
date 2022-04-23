@@ -52,6 +52,9 @@ const main = async () => {
     core.info(msg);
   };
 
+  const configValue: ConfigValue = {value: "234235363gasdgaery345", secret: false};
+  await stack.setConfig("name", configValue);
+
   if (config.refresh) {
     core.startGroup(`Refresh stack on ${config.stackName}`);
     await stack.refresh({ onOutput });
