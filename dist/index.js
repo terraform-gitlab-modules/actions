@@ -96694,7 +96694,6 @@ const main = () => modules_awaiter(void 0, void 0, void 0, function* () {
         core.info(msg);
     };
     if (config.configMap != '') {
-        core.debug(`Attempt to parse configMap`);
         const configMap = yaml_dist.parse(config.configMap);
         yield stack.setAllConfig(configMap);
     }
