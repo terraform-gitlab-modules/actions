@@ -1,6 +1,6 @@
-name: 'Pulumi CLI Action'
-author: Pulumi
-description: Pulumi's GitHub Actions deploy apps and infrastructure to your cloud of choice, using just your favorite language and GitHub.
+name: 'Custom Pulumi CLI Action'
+author: Moon1706
+description: This action contains all functionals of Pulumi CLI Action and additional support settings of Stack config. Before using this action check, please opportunities for official Pulumi action, possibly this has added.
 branding:
   icon: upload-cloud
   color: purple
