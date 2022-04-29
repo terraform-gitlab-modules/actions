@@ -1,6 +1,6 @@
 name: 'Custom Pulumi CLI Action'
 author: Moon1706
-description: This action contains all functionals of Pulumi CLI Action and additional support settings of Stack config. Before using this action check, please opportunities for official Pulumi action, possibly this has added.
+description: This action contains all functionals of Pulumi CLI Action and additional support settings of Stack config. 
 branding:
   icon: upload-cloud
   color: purple
