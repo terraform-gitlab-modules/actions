@@ -43,6 +43,8 @@ The action can be configured with the following arguments:
 - `stack-name` (required) - The name of the stack that Pulumi will be operating
   on
 
+- `version` (optional) - The version of the Pulumi tool. Defaults to `^3`.
+
 - `work-dir` (optional) - The location of your Pulumi files. Defaults to `./`.
 
 - `cloud-url` - (optional) - the Pulumi backend to login to. This would be the
@@ -69,16 +71,17 @@ The action can be configured with the following arguments:
 - `parallel` - (optional) Allow P resource operations to run in parallel at once
   (1 for no parallelism). Defaults to unbounded.
 
-- `message` - (optional) Optional message to associate with the update operation.
+- `message` - (optional) Optional message to associate with the update
+  operation.
 
 - `expect-no-changes` - (optional) Return an error if any changes occur during
   this update.
 
 - `edit-pr-comment` - (optional) Edit previous PR comment instead of posting new
   one.  
-  **PLEASE NOTE:** that as of 3.2.0 of the Action, this now defaults to
-  `true`. This is in an effort to reduce verbosity - if you want to have a
-  comment per PR run, please ensure that you set this to `false`.
+  **PLEASE NOTE:** that as of 3.2.0 of the Action, this now defaults to `true`.
+  This is in an effort to reduce verbosity - if you want to have a comment per
+  PR run, please ensure that you set this to `false`.
 
 - `diff` - (optional) Display operation as a rich diff showing the overall
   change.
@@ -87,18 +90,23 @@ The action can be configured with the following arguments:
   specified one per line (example: `<value | string>,...`).
 
 - `target` - (optional) Specify a single resource URN to update. Other resources
-  will not be updated. Multiple resources can be specified one per line (example: `<value | string>,...`).
+  will not be updated. Multiple resources can be specified one per line
+  (example: `<value | string>,...`).
 
 - `target-dependents` - (optional) Allows updating of dependent targets
   discovered but not specified in target.
 
-- `configMap` - (optional) Configuration of the stack. Format Yaml string: `{<key | string>: {value: <value | string>, secret: <is_secret | boolean> },}`.
+- `configMap` - (optional) Configuration of the stack. Format Yaml string:
+  `{<key | string>: {value: <value | string>, secret: <is_secret | boolean> },}`.
 
 - `upsert` - (optional) Allows the creation of the specified stack if it
   currently doesn't exist.  
   **PLEASE NOTE:** This will create a `Pulumi.<stack-name>.yaml` file that you
   will need to add back to source control as part of the action if you wish to
   perform any further tasks with that stack.
+
+- `downsert` - (optional) Remove the exist stack if all resources are deleted.
+  Used only with `destroy` command.
 
 By default, this action will try to authenticate Pulumi with the
 [Pulumi SaaS](https://app.pulumi.com/). If you have not specified a
@@ -167,224 +175,14 @@ coordinate the Pulumi operations. This means that there is no supporting
 functionality for npm or pip installs. This functionality should be deferred to
 the correct GitHub Marketplace actions that support it.
 
-### Pulumi - NodeJS Runtime + Pulumi Managed Backend
-
-```yaml
-name: Pulumi
-on:
-  push:
-    branches:
-      - master
-jobs:
-  up:
-    name: Update
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: 14.x
-      - run: npm install
-      - uses: pulumi/actions@v3
-        with:
-          command: up
-          stack-name: dev
-        env:
-          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
-```
-
-### Pulumi - Python Runtime + Pulumi Managed Backend
-
-```yaml
-name: Pulumi
-on:
-  push:
-    branches:
-      - master
-jobs:
-  up:
-    name: Update
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
-      - run: pip install -r requirements.txt
-      - uses: pulumi/actions@v3
-        with:
-          command: up
-          stack-name: dev
-        env:
-          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
-```
-
-### Pulumi - Go Runtime + Pulumi Managed Backend
-
-```yaml
-name: Pulumi
-on:
-  push:
-    branches:
-      - master
-jobs:
-  up:
-    name: Update
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
-        with:
-          go-version: '1.15'
-      - run: go mod download
-      - uses: pulumi/actions@v3
-        with:
-          command: up
-          stack-name: dev
-        env:
-          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
-```
-
-### Pulumi - DotNet Runtime + Pulumi Managed Backend
-
-```yaml
-name: Pulumi
-on:
-  push:
-    branches:
-      - master
-jobs:
-  up:
-    name: Update
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup DotNet
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 3.1
-      - uses: pulumi/actions@v3
-        with:
-          command: up
-          stack-name: dev
-        env:
-          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
-```
-
-### Pulumi - NodeJS Runtime + AWS S3 Self Managed Backend
-
-```yaml
-name: Pulumi
-on:
-  push:
-    branches:
-      - master
-jobs:
-  up:
-    name: Update
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup DotNet
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 3.1
-      - uses: pulumi/actions@v3
-        with:
-          command: up
-          stack-name: dev
-          cloud-url: s3://my-bucket-name
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: 'us-west-2'
-```
-
-### Pulumi - NodeJS Runtime + Google GCS Self Managed Backend
-
-```yaml
-name: Pulumi
-on:
-  push:
-    branches:
-      - master
-jobs:
-  up:
-    name: Update
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Node
-        uses: actions/setup-nodejs@v2
-        with:
-          node-version: 14.x
-      - uses: google-github-actions/setup-gcloud@v0
-        with:
-          service_account_key: ${{ secrets.GCP_KEY }}
-          project_id: ${{ env.PROJECT_ID }}
-          export_default_credentials: true
-      - uses: pulumi/actions@v3
-        with:
-          command: up
-          stack-name: dev
-          cloud-url: gs://my-bucket-name
-```
-
-### Pulumi - NodeJS Runtime + Azure Blob Self Managed Backend
-
-```yaml
-name: Pulumi
-on:
-  push:
-    branches:
-      - master
-jobs:
-  up:
-    name: Update
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup DotNet
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 3.1
-      - uses: pulumi/actions@v3
-        with:
-          command: up
-          stack-name: dev
-          cloud-url: azblob://my-blob-name-and-path
-        env:
-          AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
-          AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_KEY }}
-          AZURE_KEYVAULT_AUTH_VIA_CLI: true
-```
-
-### Pulumi - NodeJS Runtime + Local File System Self Managed Backend
-
-```yaml
-name: Pulumi
-on:
-  push:
-    branches:
-      - master
-jobs:
-  up:
-    name: Update
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup DotNet
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 3.1
-      - uses: pulumi/actions@v3
-        with:
-          command: up
-          stack-name: dev
-          cloud-url: file://~
-```
+- [NodeJS Runtime + Pulumi Managed Backend](examples/nodejs-pulumi.yaml)
+- [Python Runtime + Pulumi Managed Backend](examples/python-pulumi.yaml)
+- [Go Runtime + Pulumi Managed Backend](examples/go-pulumi.yaml)
+- [DotNet Runtime + Pulumi Managed Backend](examples/dotnet-pulumi.yaml)
+- [NodeJS Runtime + AWS S3 Self Managed Backend](examples/nodejs-aws.yaml)
+- [NodeJS Runtime + Google GCS Self Managed Backend](examples/nodejs-google.yaml)
+- [NodeJS Runtime + Azure Blob Self Managed Backend](examples/nodejs-azure.yaml)
+- [NodeJS Runtime + Local File System Self Managed Backend](examples/nodejs-local.yaml)
 
 ## Migrating from GitHub Action v1 (and beyond)?
 
