@@ -11,6 +11,10 @@ inputs:
   stack-name:
     description: 'Which stack you want to apply to, eg. dev'
     required: true
+  version:
+    description: 'Version of pulumi tool'
+    required: false
+    default: '^3'
   work-dir:
     description: 'Location of your Pulumi files. Defaults to ./'
     required: false
@@ -67,6 +71,10 @@ inputs:
     description: 'Create the stack if it currently does not exist'
     required: false
     default: 'false'
+  downsert:
+    description: 'Remove the stack after destroy resources'
+    required: false
+    default: 'false'
   edit-pr-comment:
     description: 'Edit previous PR comment instead of posting new one'
     required: false
@@ -75,5 +83,5 @@ outputs:
   output:
     description: Output from running command
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'
