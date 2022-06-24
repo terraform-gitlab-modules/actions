@@ -102,7 +102,6 @@ const main = async () => {
 
   if (config.downsert && config.command === 'destroy') {
     stack.workspace.removeStack(stack.name)
-    core.debug(`Stack has deleted`)
   }
 
   core.endGroup()
