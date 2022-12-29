@@ -41,8 +41,8 @@ The action can be configured with the following arguments:
   values are `up` (update), `refresh`, `destroy` and `preview`.
 
 - `stack-name` (required) - The name of the stack that Pulumi will be operating
-  on. Use the fully quaified org-name/stack-name when operating on a stack outside
-  of your individual account.
+  on. Use the fully quaified org-name/stack-name when operating on a stack
+  outside of your individual account.
 
 - `work-dir` (optional) - The location of your Pulumi files. Defaults to `./`.
 
@@ -63,7 +63,7 @@ The action can be configured with the following arguments:
 - `secrets-provider` - (optional) The type of the provider that should be used
   to encrypt and decrypt secrets. Possible choices: `default`, `passphrase`,
   `awskms`, `azurekeyvault`, `gcpkms`, `hashivault`. e.g.
-  `gcpkms://projects//locations/us-west1/keyRings/acmecorpsec/cryptoKeys/payroll `
+  `gcpkms://projects//locations/us-west1/keyRings/acmecorpsec/cryptoKeys/payroll`
 
 - `color` - (optional) Colorize output. Choices are: always, never, raw, auto
   (default "auto").
@@ -100,13 +100,16 @@ The action can be configured with the following arguments:
 - `config-map` - (optional) Configuration of the stack. Format Yaml string:
   `{<key | string>: {value: <value | string>, secret: <is_secret | boolean> },}`.
 
+- `plugins` - (optional) Installation Pulumi plugins. Format Yaml string:
+  `[{name: <string>, version: <string>, kind?: <undefined | string>, server?: <undefined | string>}, ...]`.
+
 - `upsert` - (optional) Allows the creation of the specified stack if it
   currently doesn't exist. **PLEASE NOTE:** This will create a
   `Pulumi.<stack-name>.yaml` file that you will need to add back to source
   control as part of the action if you wish to perform any further tasks with
   that stack.
-- `remove` - (optional) Removes the target stack if all resources are
-  destroyed. Used only with `destroy` command.
+- `remove` - (optional) Removes the target stack if all resources are destroyed.
+  Used only with `destroy` command.
 - `pulumi-version` - (optional) Install a specific version of the Pulumi CLI.
   Defaults to "^3"
 
@@ -228,11 +231,11 @@ Minor releases will be published around the beginning of the month. We may cut a
 patch release instead, if the changes are small enough not to warrant a minor
 release. We will also cut patch releases periodically as needed to address bugs.
 
-## Node 12 Support Ending 2023-01-18
+## Node 12 Support Ending 2022-12-07
 
 We intend this action to work for all GitHub users, both SaaS users and GitHub
 Enterprise users. As such, this action will continue to use Node 12 until all
 maintained versions of GitHub Enterprise have Node 16 support. This date is
-2023-01-18, when GitHub Enterprise v3.3 is sunset. After 2023-01-18, this action
+2022-12-07, when GitHub Enterprise v3.3 is sunset. After 2022-12-07, this action
 will upgrade to Node 16, and will no longer run on GitHub Actions runners
 without Node 16 support.
