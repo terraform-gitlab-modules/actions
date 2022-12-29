@@ -81906,6 +81906,7 @@ var github = __nccwpck_require__(5438);
 // EXTERNAL MODULE: ./node_modules/runtypes/lib/index.js
 var lib = __nccwpck_require__(5568);
 ;// CONCATENATED MODULE: ./src/libs/utils.ts
+
 function parseArray(input) {
     return parseUndefined(input)
         ? input.split(/\r?\n/).reduce((acc, line) => acc
@@ -81923,6 +81924,15 @@ function parseBoolean(input) {
 function parseNumber(input) {
     return parseUndefined(input) ? Number(input) : undefined;
 }
+function parsePlugins(input) {
+    if (parseUndefined(input)) {
+        const plugins = dist.parse(input);
+        return plugins.map(plugin => plugin);
+    }
+    else {
+        return [];
+    }
+}
 
 ;// CONCATENATED MODULE: ./src/config.ts
 
@@ -81931,6 +81941,13 @@ function parseNumber(input) {
 
 
 const command = lib.Union(lib.Literal('up'), lib.Literal('update'), lib.Literal('refresh'), lib.Literal('destroy'), lib.Literal('preview'));
+const config_plugin = lib.Record({
+    name: lib.String,
+    version: lib.String,
+}).And(lib.Partial({
+    server: lib.String,
+    kind: lib.String
+}));
 const options = lib.Partial({
     parallel: lib.Number,
     message: lib.String,
@@ -81963,6 +81980,7 @@ const config = lib.Record({
     upsert: lib.Boolean,
     remove: lib.Boolean,
     refresh: lib.Boolean,
+    plugins: lib.Array(config_plugin),
     secretsProvider: lib.String,
     commentOnPrNumber: lib.Number,
 }));
@@ -81982,6 +82000,7 @@ function makeConfig() {
             remove: parseBoolean((0,core.getInput)('remove')),
             refresh: parseBoolean((0,core.getInput)('refresh')),
             configMap: (0,core.getInput)('config-map'),
+            plugins: parsePlugins((0,core.getInput)('plugins')),
             isPullRequest: ((_a = github.context === null || github.context === void 0 ? void 0 : github.context.payload) === null || _a === void 0 ? void 0 : _a.pull_request) !== undefined,
             options: {
                 parallel: parseNumber((0,core.getInput)('parallel')),
@@ -82268,6 +82287,16 @@ const main = () => modules_awaiter(void 0, void 0, void 0, function* () {
     if (config.configMap != '') {
         const configMap = dist.parse(config.configMap);
         yield stack.setAllConfig(configMap);
+    }
+    if (config.plugins != []) {
+        for (const plugin of config.plugins) {
+            if (plugin.server) {
+                yield stack.workspace.installPluginFromServer(plugin.name, plugin.version, plugin.server);
+            }
+            else {
+                yield stack.workspace.installPlugin(plugin.name, plugin.version, plugin.kind || 'resource');
+            }
+        }
     }
     if (config.refresh) {
         core.startGroup(`Refresh stack on ${config.stackName}`);
